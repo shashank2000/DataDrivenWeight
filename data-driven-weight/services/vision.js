@@ -12,10 +12,10 @@ const newWeight = (newImage) => {
     // using ocr.space for now to see if it's easier than Cloud Vision
     console.log("going to make ocr.space api call")
     console.log(newImage[10] + " 10th character of newImage")
-    
+    // keys are strings by default
     const ocrObject = {
-      'apikey': OCR_key,
-      'base64Image': newImage,
+      apikey: OCR_key,
+      base64Image: newImage,
     }
     // const fullObject =  {
     //     requests: [
@@ -34,7 +34,7 @@ const newWeight = (newImage) => {
 
     // what is the exact problem I am dealing with?
     const request = axios.post(baseURL, ocrObject)
-    console.log(request)
+    // console.log(request)
     return request.then(response => (response))
 }
 
