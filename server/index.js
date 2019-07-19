@@ -1,7 +1,6 @@
 const express = require('express')
 const multer = require('multer')
 const bodyParser = require('body-parser')
-const tesseract = require('node-tesseract-ocr')
 const ocrSpaceApi = require('ocr-space-api')
 const app = express()
 
