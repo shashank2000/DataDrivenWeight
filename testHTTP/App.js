@@ -53,7 +53,7 @@ export default class ImagePickerExample extends React.Component {
     if (!result.cancelled) {
       this.setState({ image: result.uri });
       console.log("image will be uploaded now!")
-      imgurUpload(this.state.image)
+      imgurUpload(this.state.image)//.then(response.url => uploadToNode(response.url))
     }
   }
 
