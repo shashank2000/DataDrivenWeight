@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Image, Button } from 'react-native';
-import { ImagePicker, Permissions } from 'expo';
+import { ImageStore, ScrollView, StyleSheet, Image, Button } from 'react-native';
+import { ImagePicker, Permissions, Constants } from 'expo';
 import axios from 'axios'
 import { Platform } from '@unimodules/core';
 
@@ -40,26 +40,80 @@ export default function CameraScreen() {
       imgurUpload(newImage)
     }
   }
-  imgurUpload = (photo) => {
+  imgurUpload = () => {
       // we need to do a post request here
-      var bodyFormData = new FormData()
-      bodyFormData.append('image', photo)
-      console.log(photo)
-      console.log("starting axios post now")
-      const config = {  
-          Accept: 'application/json',
-          Authorization: 'Client-ID ab294af0c3a968f',  
+      console.log('Entering foo');
+  
+      let clientId = "5afd6b67306a4cb";
+      // let clientSecret = "04608dcd172ef4ac90272149c4ed50f9f9f45f2f";
+      let token = false;
+      let auth;
+      if (token) {
+        auth = 'Bearer ' + token;
+      } else {
+        auth = 'Client-ID ' + clientId;
       }
-      axios.post('https://api.imgur.com/3/upload', bodyFormData, config).then((response) => {
-          console.log("never getting here")
-          console.log(response)
-          return response
-        })
-      .catch((response) => {
-        console.log("here")
-        console.log("current request is ", bodyFormData, config)
-        console.log(response)
+      
+      console.log(2);
+      
+      let base64data = await new Promise((resolve, reject) => {
+        ImageStore.getBase64ForTag("http://cdn3-www.dogtime.com/assets/uploads/gallery/30-impossibly-cute-puppies/impossibly-cute-puppy-21.jpg", (data) => {
+          resolve(data);
+        });
       })
+      
+      const formData = new FormData();
+      formData.append('upload', {
+                image: base64data,
+          type: 'base64'
+      });
+  
+      const result = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: auth,
+          Accept: 'application/json',
+        },
+      });
+      
+      console.log(3);
+      
+      
+      console.log("result=", result);
+      
+      let iid = result.data.id;
+      let imgUrl = "https://imgur.com/gallery/" + iid;
+      console.log(imgUrl);
+      return imgUrl;
+  
+  
+      
+
+      // var bodyFormData = new FormData()
+      // bodyFormData.append('image', photo)
+      // console.log(photo)
+      // console.log("starting axios post now")
+      // const config = {  
+      //     Accept: 'application/json',
+      //     Authorization: 'Client-ID ab294af0c3a968f',  
+      // }
+      // let base64data = await new Promise((resolve, reject) => {
+      //   ImageStore.getBase64ForTag("http://cdn3-www.dogtime.com/assets/uploads/gallery/30-impossibly-cute-puppies/impossibly-cute-puppy-21.jpg", (data) => {
+      //     resolve(data);
+      //   });
+      // })
+
+      // axios.post('https://api.imgur.com/3/upload', bodyFormData, config).then((response) => {
+      //     console.log("never getting here")
+      //     console.log(response)
+      //     return response
+      //   })
+      // .catch((response) => {
+      //   console.log("here")
+      //   console.log("current request is ", bodyFormData, config)
+      //   console.log(response)
+      // })
   }
 
   // imgurUpload = (photo) => {
@@ -98,7 +152,7 @@ export default function CameraScreen() {
         {newImage &&
           <Image source={{ uri: newImage }} style={{ width: 200, height: 200 }} />}
 
-        <Button title="Upload to server" onPress={dance}></Button>
+        <Button title="Upload to server" onPress={imgurUpload}></Button>
     </ScrollView>
   );
 
